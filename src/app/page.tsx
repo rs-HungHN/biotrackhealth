@@ -235,12 +235,12 @@ export default function BioTrackHealthPage() {
                 <div className="space-y-3">
                   <a
                     id="cta-claim-protocol"
-                    href="https://superpower.com"
+                    href="https://partners.superpower.com/marcus-vance"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-black font-extrabold text-lg flex items-center justify-center gap-3 shadow-lg shadow-emerald-500/25 hover:opacity-95 transition-all duration-200 transform hover:scale-[1.01]"
                   >
-                    <span>Claim Your Full 100+ Biomarker Panel (50% Off)</span>
+                    <span>Claim Your Full 100+ Biomarker Panel ($199/yr)</span>
                     <ArrowRight className="w-5 h-5" />
                   </a>
                   
