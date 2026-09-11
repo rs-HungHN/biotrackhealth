@@ -39,7 +39,21 @@ export default function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'AW-18012920683');
+                        gtag('config', 'AW-18012920683');
+            function gtag_report_conversion(url) {
+              var callback = function () {
+                if (typeof(url) != 'undefined') {
+                  window.location = url;
+                }
+              };
+              gtag('event', 'conversion', {
+                  'send_to': 'AW-18012920683/epNWCJav1PMcEOu2nY1D',
+                  'value': 1.0,
+                  'currency': 'VND',
+                  'event_callback': callback
+              });
+              return false;
+            }
           `}
         </Script>
       </head>
