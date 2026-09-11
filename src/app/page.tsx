@@ -165,8 +165,23 @@ export default function BioTrackHealthPage() {
               </h1>
               
               <p className="text-base sm:text-lg text-slate-400 font-normal leading-relaxed">
-                Standard medical physicals only check 15–20 basic markers. Answer 4 quick questions to see which critical longevity & metabolic biomarkers you need to track.
+                Standard medical physicals only check 15-20 basic markers. Answer 4 quick questions to see which critical longevity & metabolic biomarkers you need to track.
               </p>
+
+              {/* Fast-Track 1-Click Direct Access */}
+              <div className="mt-5 inline-flex flex-wrap items-center justify-center gap-2 px-4 py-2 rounded-full bg-slate-900/90 border border-slate-700/80 hover:border-emerald-500/50 transition-all text-xs font-semibold text-slate-300 shadow-md">
+                <span className="text-slate-400">In a rush?</span>
+                <a
+                  href={partnerLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={trackConversion}
+                  className="text-emerald-400 hover:text-emerald-300 font-bold inline-flex items-center gap-1 group"
+                >
+                  <span>Skip assessment & order 100+ panel directly ($199/yr)</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </a>
+              </div>
             </div>
           )}
 
