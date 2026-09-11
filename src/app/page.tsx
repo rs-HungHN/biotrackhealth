@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Rate, Spin, ConfigProvider } from "antd";
+import { Rate, ConfigProvider } from "antd";
 import {
   Activity,
   Brain,
@@ -9,7 +9,6 @@ import {
   ChevronRight,
   ShieldCheck,
   Dna,
-  PieChart,
   Target,
   CheckCircle2,
   Sparkles,
@@ -18,7 +17,8 @@ import {
   FlaskConical,
   Zap,
   Award,
-  ChevronDown
+  Check,
+  X
 } from "lucide-react";
 
 export default function BioTrackHealthPage() {
@@ -29,37 +29,56 @@ export default function BioTrackHealthPage() {
     tracking: "",
     personalization: 5,
   });
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [showResult, setShowResult] = useState(false);
-  const [progressPercent, setProgressPercent] = useState(0);
-  const [analysisPhase, setAnalysisPhase] = useState("Calibrating biomarker benchmarks...");
 
-  // AI Analysis simulation
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisPhase, setAnalysisPhase] = useState("");
+  const [progressPercent, setProgressPercent] = useState(0);
+  const [showResult, setShowResult] = useState(false);
+
+  // Analysis Loading Simulation
   useEffect(() => {
     if (isAnalyzing) {
+      const phases = [
+        "Mapping cardiovascular risk factors (ApoB, hs-CRP)...",
+        "Assessing cellular aging & metabolic efficiency (HbA1c, Fasting Insulin)...",
+        "Analyzing hormonal balance & adrenal health...",
+        "Generating clinical action protocol & biomarker recommendations...",
+      ];
+
+      let currentPhaseIdx = 0;
+      setAnalysisPhase(phases[0]);
+
       const interval = setInterval(() => {
         setProgressPercent((prev) => {
-          if (prev === 25) setAnalysisPhase("Matching age & metabolic profiles...");
-          if (prev === 60) setAnalysisPhase("Cross-referencing 100+ diagnostic panels...");
-          if (prev === 85) setAnalysisPhase("Finalizing personalized protocol...");
           if (prev >= 100) {
             clearInterval(interval);
             setIsAnalyzing(false);
             setShowResult(true);
             return 100;
           }
-          return prev + 5;
+          const next = prev + 1.25;
+          const newIdx = Math.min(
+            Math.floor((next / 100) * phases.length),
+            phases.length - 1
+          );
+          if (newIdx !== currentPhaseIdx) {
+            currentPhaseIdx = newIdx;
+            setAnalysisPhase(phases[newIdx]);
+          }
+          return next;
         });
-      }, 90);
+      }, 35);
+
       return () => clearInterval(interval);
     }
   }, [isAnalyzing]);
 
   const handleNext = () => {
-    if (currentStep === 3) {
-      setIsAnalyzing(true);
-    } else {
+    if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
+    } else {
+      setIsAnalyzing(true);
+      setProgressPercent(0);
     }
   };
 
@@ -68,14 +87,17 @@ export default function BioTrackHealthPage() {
     if (currentStep === 1) return answers.ageGroup !== "";
     if (currentStep === 2) return answers.tracking !== "";
     if (currentStep === 3) return answers.personalization > 0;
-    return true;
+    return false;
   };
+
+  const partnerLink = "https://partners.superpower.com/marcus-vance";
 
   return (
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: "#10b981", // Emerald accent
+          colorPrimary: "#10b981",
+          colorBgBase: "#090a0f",
           colorText: "#f1f5f9",
           fontFamily: "var(--font-geist-sans), sans-serif",
           borderRadius: 12,
@@ -100,7 +122,7 @@ export default function BioTrackHealthPage() {
               BioTrack<span className="text-emerald-400 font-medium">Health</span>
             </span>
             <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              AI Diagnostic
+              Clinical Assessment
             </span>
           </div>
 
@@ -115,11 +137,11 @@ export default function BioTrackHealthPage() {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 w-full max-w-3xl mx-auto px-6 py-10 flex flex-col items-center relative z-10">
+        <main className="flex-1 w-full max-w-4xl mx-auto px-6 py-10 flex flex-col items-center relative z-10">
           
           {/* Header Badge & Hero */}
           {!isAnalyzing && !showResult && (
-            <div className="text-center mb-10 animate-fade-in">
+            <div className="text-center mb-10 animate-fade-in max-w-2xl">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 mb-5 rounded-full bg-slate-800/80 border border-slate-700/80 text-slate-300 text-xs font-semibold tracking-wide shadow-inner">
                 <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
                 <span>60-Second Clinical Assessment</span>
@@ -132,8 +154,8 @@ export default function BioTrackHealthPage() {
                 </span>
               </h1>
               
-              <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto font-normal leading-relaxed">
-                Standard medical physicals only check 20-30 basic markers. Answer 4 quick questions to see which critical longevity & metabolic biomarkers you need to track.
+              <p className="text-base sm:text-lg text-slate-400 font-normal leading-relaxed">
+                Standard medical physicals only check 15–20 basic markers. Answer 4 quick questions to see which critical longevity & metabolic biomarkers you need to track.
               </p>
             </div>
           )}
@@ -200,7 +222,7 @@ export default function BioTrackHealthPage() {
                       <Target className="w-4 h-4 text-emerald-400" /> Focus Category
                     </div>
                     <div className="text-xl font-extrabold text-white">
-                      {answers.goal}
+                      {answers.goal || "Longevity & Cellular Health"}
                     </div>
                   </div>
 
@@ -209,7 +231,7 @@ export default function BioTrackHealthPage() {
                       <Zap className="w-4 h-4 text-cyan-400" /> Critical Biomarkers Missed
                     </div>
                     <div className="text-xl font-extrabold text-emerald-400">
-                      70+ Untracked Biomarkers
+                      80+ Untracked Biomarkers
                     </div>
                   </div>
                 </div>
@@ -225,27 +247,170 @@ export default function BioTrackHealthPage() {
                         Comprehensive Full-Body Panel Recommended
                       </h4>
                       <p className="text-slate-300 text-sm leading-relaxed">
-                        Based on your profile, routine annual tests fail to screen critical cardiovascular inflammation (ApoB, hs-CRP) and cellular metabolic markers. We recommend a full 100+ biomarker panel to detect risks 5-10 years before symptoms appear.
+                        Based on your profile, routine annual doctor visits fail to screen critical cardiovascular inflammation (ApoB, hs-CRP), cellular metabolic markers, and hormonal baselines. A comprehensive 100+ biomarker panel detects underlying risks 5–10 years before symptoms appear.
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Action CTA Button */}
+                {/* Real Clinical Assets Gallery */}
+                <div className="mb-8">
+                  <h4 className="font-bold text-white text-lg mb-4 flex items-center gap-2">
+                    <FlaskConical className="w-5 h-5 text-emerald-400" />
+                    Inside Your 100+ Biomarker Health Protocol
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 group hover:border-slate-700 transition-all">
+                      <div className="relative h-48 w-full bg-slate-950 overflow-hidden">
+                        <img
+                          src="/biomarkers_dashboard.png"
+                          alt="100+ Biomarkers Dashboard"
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h5 className="font-bold text-sm text-white">100+ Biomarkers Analyzed</h5>
+                        <p className="text-xs text-slate-400 mt-1">Real-time status: Optimal, Needs Attention, or At-Risk with precision clinical ranges.</p>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 group hover:border-slate-700 transition-all">
+                      <div className="relative h-48 w-full bg-slate-950 overflow-hidden">
+                        <img
+                          src="/biological_age_score.png"
+                          alt="Biological Age & Health Score"
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h5 className="font-bold text-sm text-white">Biological Age & Health Score</h5>
+                        <p className="text-xs text-slate-400 mt-1">Calculates your true internal biological age compared to your chronological age.</p>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 group hover:border-slate-700 transition-all">
+                      <div className="relative h-48 w-full bg-slate-950 overflow-hidden">
+                        <img
+                          src="/clinical_action_plan.png"
+                          alt="Personalized Doctor Action Plan"
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h5 className="font-bold text-sm text-white">Dedicated Physician Action Plan</h5>
+                        <p className="text-xs text-slate-400 mt-1">Doctor-reviewed recommendations, custom supplementation, and lifestyle protocols.</p>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 group hover:border-slate-700 transition-all">
+                      <div className="relative h-48 w-full bg-slate-950 overflow-hidden">
+                        <img
+                          src="/blood_panel_kit.png"
+                          alt="Lab Visit or At-Home Phlebotomy Kit"
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h5 className="font-bold text-sm text-white">Flexible Blood Draw Options</h5>
+                        <p className="text-xs text-slate-400 mt-1">Visit any certified partner lab or request a licensed phlebotomist to your home.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Direct Comparison Table ($199 vs $499 Function Health vs Routine PCP) */}
+                <div className="mb-8 rounded-2xl bg-slate-900/90 border border-slate-800 overflow-hidden">
+                  <div className="p-4 bg-slate-800/60 border-b border-slate-800 flex items-center justify-between">
+                    <span className="font-bold text-sm text-white flex items-center gap-2">
+                      <Activity className="w-4 h-4 text-emerald-400" />
+                      Comprehensive Value Breakdown
+                    </span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                      Save Over $300/Year
+                    </span>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs sm:text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-800 text-slate-400 font-semibold bg-slate-950/40">
+                          <th className="py-3 px-4">Feature / Metric</th>
+                          <th className="py-3 px-3 text-center text-slate-500">Routine Checkup</th>
+                          <th className="py-3 px-3 text-center text-slate-400">Function Health</th>
+                          <th className="py-3 px-4 text-center text-emerald-400 font-bold bg-emerald-500/10 border-x border-emerald-500/20">
+                            BioTrack / Superpower
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                        <tr>
+                          <td className="py-3 px-4 font-medium">Biomarkers Tested</td>
+                          <td className="py-3 px-3 text-center text-slate-400">15 – 20 basic</td>
+                          <td className="py-3 px-3 text-center text-slate-300">100+ markers</td>
+                          <td className="py-3 px-4 text-center font-bold text-emerald-300 bg-emerald-500/10 border-x border-emerald-500/20">
+                            100+ Full Panel
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="py-3 px-4 font-medium">Annual Cost</td>
+                          <td className="py-3 px-3 text-center text-slate-400">$200–$800 co-pays</td>
+                          <td className="py-3 px-3 text-center text-red-400 font-semibold">$499 / year</td>
+                          <td className="py-3 px-4 text-center font-black text-emerald-400 bg-emerald-500/10 border-x border-emerald-500/20 text-base">
+                            $199 / year
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="py-3 px-4 font-medium">Cardio Inflammation (ApoB, hs-CRP)</td>
+                          <td className="py-3 px-3 text-center text-rose-500"><X className="w-4 h-4 mx-auto" /></td>
+                          <td className="py-3 px-3 text-center text-emerald-400"><Check className="w-4 h-4 mx-auto" /></td>
+                          <td className="py-3 px-4 text-center text-emerald-400 bg-emerald-500/10 border-x border-emerald-500/20">
+                            <Check className="w-4 h-4 mx-auto font-bold" />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="py-3 px-4 font-medium">Biological Age Calculation</td>
+                          <td className="py-3 px-3 text-center text-rose-500"><X className="w-4 h-4 mx-auto" /></td>
+                          <td className="py-3 px-3 text-center text-emerald-400"><Check className="w-4 h-4 mx-auto" /></td>
+                          <td className="py-3 px-4 text-center text-emerald-400 bg-emerald-500/10 border-x border-emerald-500/20">
+                            <Check className="w-4 h-4 mx-auto font-bold" />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="py-3 px-4 font-medium">Doctor Action Plan & AI Concierge</td>
+                          <td className="py-3 px-3 text-center text-slate-500">5 min rushed visit</td>
+                          <td className="py-3 px-3 text-center text-slate-300">Wait 3–4 weeks</td>
+                          <td className="py-3 px-4 text-center font-bold text-emerald-300 bg-emerald-500/10 border-x border-emerald-500/20">
+                            24/7 Concierge + MD Plan
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="py-3 px-4 font-medium">At-Home Phlebotomy Option</td>
+                          <td className="py-3 px-3 text-center text-rose-500"><X className="w-4 h-4 mx-auto" /></td>
+                          <td className="py-3 px-3 text-center text-slate-400">Limited states</td>
+                          <td className="py-3 px-4 text-center font-bold text-emerald-300 bg-emerald-500/10 border-x border-emerald-500/20">
+                            Available in 50 States
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Primary Action CTA Button */}
                 <div className="space-y-3">
                   <a
                     id="cta-claim-protocol"
-                    href="https://partners.superpower.com/marcus-vance"
+                    href={partnerLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-black font-extrabold text-lg flex items-center justify-center gap-3 shadow-lg shadow-emerald-500/25 hover:opacity-95 transition-all duration-200 transform hover:scale-[1.01]"
+                    className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-black font-black text-lg sm:text-xl flex items-center justify-center gap-3 shadow-xl shadow-emerald-500/25 hover:opacity-95 transition-all duration-200 transform hover:scale-[1.01]"
                   >
                     <span>Claim Your Full 100+ Biomarker Panel ($199/yr)</span>
-                    <ArrowRight className="w-5 h-5" />
+                    <ArrowRight className="w-6 h-6" />
                   </a>
                   
-                  <p className="text-center text-xs text-slate-500 font-medium">
-                    Backed by 100% Satisfaction Guarantee • In-home Phlebotomy or Lab Visits across 50 US States
+                  <p className="text-center text-xs text-slate-400 font-medium">
+                    Backed by 100% Satisfaction Guarantee • In-home Phlebotomy or 2,000+ Lab Visits across 50 US States
                   </p>
                 </div>
               </div>
@@ -259,48 +424,32 @@ export default function BioTrackHealthPage() {
                       What is your #1 health & longevity priority?
                     </h3>
                     <p className="text-slate-400 text-sm mb-6">
-                      Select the primary area you want to benchmark and optimize.
+                      Select the primary objective guiding your personal biomarker monitoring.
                     </p>
-                    
+
                     <div className="space-y-3">
                       {[
-                        {
-                          title: "Longevity & Cellular Aging",
-                          desc: "Screen cardiovascular health, biological age, and inflammation",
-                          icon: <Heart className="w-5 h-5" />,
-                        },
-                        {
-                          title: "Peak Energy & Metabolic Health",
-                          desc: "Optimize thyroid, fasting insulin, HbA1c, and vitality",
-                          icon: <Zap className="w-5 h-5" />,
-                        },
-                        {
-                          title: "Cognitive & Brain Performance",
-                          desc: "Track neuro-markers, sleep architecture, and stress cortisol",
-                          icon: <Brain className="w-5 h-5" />,
-                        },
-                        {
-                          title: "Hormone & Physical Optimization",
-                          desc: "Total/Free Testosterone, DHEA, IGF-1, and body composition",
-                          icon: <Activity className="w-5 h-5" />,
-                        },
+                        { icon: Heart, title: "Cardiovascular & Heart Protection", desc: "Track ApoB, hs-CRP, and early vascular arterial plaque indicators" },
+                        { icon: Activity, title: "Energy, Metabolic & Insulin Optimization", desc: "Eliminate afternoon brain fog, optimize HbA1c, and insulin sensitivity" },
+                        { icon: Brain, title: "Hormone, Thyroid & Adrenal Vitality", desc: "Balance Free Testosterone, DHEA-S, Cortisol, and vital thyroid panels" },
+                        { icon: Sparkles, title: "Comprehensive Longevity & Cellular Age", desc: "Calculate true biological age and cellular biological clock status" },
                       ].map((item) => (
                         <div
                           key={item.title}
                           onClick={() => setAnswers({ ...answers, goal: item.title })}
                           className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-4 ${
                             answers.goal === item.title
-                              ? "border-emerald-400 bg-emerald-500/10 text-white shadow-md shadow-emerald-500/10"
-                              : "border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700"
+                              ? "border-emerald-400 bg-emerald-500/10 text-white shadow-lg shadow-emerald-500/10"
+                              : "border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700 hover:bg-slate-900"
                           }`}
                         >
                           <div className={`p-2.5 rounded-xl ${
-                            answers.goal === item.title ? "bg-emerald-400 text-black" : "bg-slate-800 text-slate-400"
+                            answers.goal === item.title ? "bg-emerald-400 text-black font-bold" : "bg-slate-800 text-slate-400"
                           }`}>
-                            {item.icon}
+                            <item.icon className="w-5 h-5" />
                           </div>
                           <div className="flex-1">
-                            <div className="font-bold text-base sm:text-lg text-white">{item.title}</div>
+                            <div className="font-bold text-base text-white">{item.title}</div>
                             <div className="text-xs text-slate-400 mt-0.5">{item.desc}</div>
                           </div>
                           {answers.goal === item.title && (
@@ -312,7 +461,7 @@ export default function BioTrackHealthPage() {
                   </div>
                 )}
 
-                {/* Step 2: Age Group */}
+                {/* Step 2: Age Bracket */}
                 {currentStep === 1 && (
                   <div className="animate-fade-in-right">
                     <h3 className="text-2xl sm:text-3xl font-black text-white mb-2 tracking-tight">
@@ -436,49 +585,202 @@ export default function BioTrackHealthPage() {
             )}
           </div>
 
-          {/* Social Proof & Scientific Backing */}
+          {/* Educational Trust Section (Visible on Main View) */}
           {!showResult && !isAnalyzing && (
-            <div className="mt-12 w-full grid grid-cols-3 gap-4 text-center">
-              <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/60">
-                <div className="text-xl sm:text-2xl font-black text-white">100+</div>
-                <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mt-1">Biomarkers Tested</div>
+            <div className="mt-16 w-full space-y-12 animate-fade-in">
+              
+              {/* Trust Badges */}
+              <div className="w-full grid grid-cols-3 gap-4 text-center">
+                <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/60">
+                  <div className="text-xl sm:text-2xl font-black text-white">100+</div>
+                  <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mt-1">Biomarkers Tested</div>
+                </div>
+                <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/60">
+                  <div className="text-xl sm:text-2xl font-black text-emerald-400">50 States</div>
+                  <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mt-1">Nationwide Coverage</div>
+                </div>
+                <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/60">
+                  <div className="text-xl sm:text-2xl font-black text-cyan-400">CLIA/CAP</div>
+                  <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mt-1">Certified Labs</div>
+                </div>
               </div>
-              <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/60">
-                <div className="text-xl sm:text-2xl font-black text-emerald-400">50 States</div>
-                <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mt-1">Nationwide Coverage</div>
+
+              {/* Head-to-Head Comparison Preview */}
+              <div className="rounded-3xl bg-[#11131a]/80 border border-slate-800 overflow-hidden shadow-xl">
+                <div className="p-6 bg-slate-900/60 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="font-extrabold text-xl text-white">Why Proactive Health Enthusiasts Choose Superpower</h3>
+                    <p className="text-xs text-slate-400 mt-1">Direct head-to-head comparison with traditional doctors and high-priced alternatives.</p>
+                  </div>
+                  <span className="self-start sm:self-auto text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                    Save $300 vs Function Health
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs sm:text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-800 text-slate-400 font-semibold bg-slate-950/40">
+                        <th className="py-3.5 px-5">Standard of Care</th>
+                        <th className="py-3.5 px-4 text-center text-slate-500">Routine Checkup</th>
+                        <th className="py-3.5 px-4 text-center text-slate-400">Function Health</th>
+                        <th className="py-3.5 px-5 text-center text-emerald-400 font-bold bg-emerald-500/10 border-x border-emerald-500/20">
+                          BioTrack / Superpower
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                      <tr>
+                        <td className="py-3.5 px-5 font-medium">Biomarkers Tested</td>
+                        <td className="py-3.5 px-4 text-center text-slate-400">15 – 20 markers</td>
+                        <td className="py-3.5 px-4 text-center text-slate-300">100+ markers</td>
+                        <td className="py-3.5 px-5 text-center font-bold text-emerald-300 bg-emerald-500/10 border-x border-emerald-500/20">
+                          100+ Full Panel
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="py-3.5 px-5 font-medium">Membership Price</td>
+                        <td className="py-3.5 px-4 text-center text-slate-400">$200–$800 co-pays</td>
+                        <td className="py-3.5 px-4 text-center text-red-400 font-bold">$499 / year</td>
+                        <td className="py-3.5 px-5 text-center font-black text-emerald-400 bg-emerald-500/10 border-x border-emerald-500/20 text-base">
+                          $199 / year
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="py-3.5 px-5 font-medium">Cardiovascular ApoB & hs-CRP</td>
+                        <td className="py-3.5 px-4 text-center text-rose-500"><X className="w-4 h-4 mx-auto" /></td>
+                        <td className="py-3.5 px-4 text-center text-emerald-400"><Check className="w-4 h-4 mx-auto" /></td>
+                        <td className="py-3.5 px-5 text-center text-emerald-400 bg-emerald-500/10 border-x border-emerald-500/20">
+                          <Check className="w-4 h-4 mx-auto font-bold" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="py-3.5 px-5 font-medium">Biological Age Calculation</td>
+                        <td className="py-3.5 px-4 text-center text-rose-500"><X className="w-4 h-4 mx-auto" /></td>
+                        <td className="py-3.5 px-4 text-center text-emerald-400"><Check className="w-4 h-4 mx-auto" /></td>
+                        <td className="py-3.5 px-5 text-center text-emerald-400 bg-emerald-500/10 border-x border-emerald-500/20">
+                          <Check className="w-4 h-4 mx-auto font-bold" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="py-3.5 px-5 font-medium">Physician Action Plan & Chat</td>
+                        <td className="py-3.5 px-4 text-center text-slate-500">Rushed 5-min visit</td>
+                        <td className="py-3.5 px-4 text-center text-slate-400">3–4 weeks delay</td>
+                        <td className="py-3.5 px-5 text-center font-bold text-emerald-300 bg-emerald-500/10 border-x border-emerald-500/20">
+                          24/7 AI + MD Plan
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="p-4 bg-slate-900/80 border-t border-slate-800 text-center">
+                  <a
+                    href={partnerLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-bold text-sm transition-colors"
+                  >
+                    <span>View Full 100+ Biomarker Panel Details on Superpower</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </a>
+                </div>
               </div>
-              <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/60">
-                <div className="text-xl sm:text-2xl font-black text-cyan-400">CLIA/CAP</div>
-                <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mt-1">Certified Labs</div>
+
+              {/* Visual Feature Grid with Air Assets */}
+              <div>
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl sm:text-3xl font-black text-white">Clinical Longevity Architecture</h3>
+                  <p className="text-sm text-slate-400 mt-2">Comprehensive prevention powered by top CLIA/CAP laboratories across the United States.</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="rounded-3xl bg-[#11131a]/90 border border-slate-800 overflow-hidden group hover:border-emerald-500/30 transition-all shadow-lg">
+                    <div className="relative h-60 w-full bg-slate-950 overflow-hidden">
+                      <img
+                        src="/biomarkers_dashboard.png"
+                        alt="Superpower 100+ Biomarkers Dashboard"
+                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <div className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-1">Precision Analytics</div>
+                      <h4 className="text-lg font-bold text-white mb-2">100+ Advanced Biomarkers</h4>
+                      <p className="text-sm text-slate-400 leading-relaxed">
+                        Go far beyond basic CBC tests. Track ApoB, hs-CRP, metabolic panels, hormones, and nutrient baselines in one clinical dashboard.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="rounded-3xl bg-[#11131a]/90 border border-slate-800 overflow-hidden group hover:border-emerald-500/30 transition-all shadow-lg">
+                    <div className="relative h-60 w-full bg-slate-950 overflow-hidden">
+                      <img
+                        src="/biological_age_score.png"
+                        alt="Biological Age and Health Score"
+                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <div className="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-1">Longevity Metrics</div>
+                      <h4 className="text-lg font-bold text-white mb-2">Biological Age Calculation</h4>
+                      <p className="text-sm text-slate-400 leading-relaxed">
+                        Discover your cellular aging speed. Identify biological clock discrepancies to take targeted action before chronic conditions manifest.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="rounded-3xl bg-[#11131a]/90 border border-slate-800 overflow-hidden group hover:border-emerald-500/30 transition-all shadow-lg">
+                    <div className="relative h-60 w-full bg-slate-950 overflow-hidden">
+                      <img
+                        src="/clinical_action_plan.png"
+                        alt="Clinical Doctor Action Plan"
+                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <div className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-1">Doctor Reviewed</div>
+                      <h4 className="text-lg font-bold text-white mb-2">Personalized Action Protocol</h4>
+                      <p className="text-sm text-slate-400 leading-relaxed">
+                        Every report includes personalized recommendations from licensed medical physicians with evidence-based lifestyle & nutrition steps.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="rounded-3xl bg-[#11131a]/90 border border-slate-800 overflow-hidden group hover:border-emerald-500/30 transition-all shadow-lg">
+                    <div className="relative h-60 w-full bg-slate-950 overflow-hidden">
+                      <img
+                        src="/blood_panel_kit.png"
+                        alt="Blood Draw Kit and Lab Network"
+                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <div className="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-1">Frictionless Experience</div>
+                      <h4 className="text-lg font-bold text-white mb-2">In-Home or Lab Blood Draws</h4>
+                      <p className="text-sm text-slate-400 leading-relaxed">
+                        Enjoy the luxury of an at-home phlebotomist visit or drop by any of 2,000+ certified partner lab locations nationwide across 50 US states.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
+
             </div>
           )}
         </main>
 
         {/* Footer */}
         <footer className="w-full max-w-5xl mx-auto px-6 py-8 border-t border-slate-800/60 text-center text-xs text-slate-500 relative z-10">
+          <div className="flex justify-center gap-6 mb-3 text-slate-400">
+            <a href="https://biotrackhealth.tech" className="hover:text-emerald-400 transition-colors">Privacy Policy</a>
+            <span>•</span>
+            <a href="https://biotrackhealth.tech" className="hover:text-emerald-400 transition-colors">Terms of Service</a>
+            <span>•</span>
+            <a href="mailto:contact@biotrackhealth.tech" className="hover:text-emerald-400 transition-colors">contact@biotrackhealth.tech</a>
+          </div>
           <p>© {new Date().getFullYear()} BioTrack Health. All rights reserved. Not intended as medical diagnosis or treatment advice.</p>
         </footer>
       </div>
-
-      {/* Global Style overrides */}
-      <style jsx global>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes fadeInRight {
-          from { opacity: 0; transform: translateX(16px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(16px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-        .animate-fade-in-right { animation: fadeInRight 0.35s ease-out forwards; }
-        .animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
-      `}</style>
     </ConfigProvider>
   );
 }
