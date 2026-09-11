@@ -90,7 +90,17 @@ export default function BioTrackHealthPage() {
     return false;
   };
 
-  const partnerLink = "https://partners.superpower.com/marcus-vance";
+    const partnerLink = "https://partners.superpower.com/marcus-vance";
+
+  const trackConversion = () => {
+    if (typeof window !== "undefined" && (window as any).gtag) {
+      (window as any).gtag("event", "conversion", {
+        send_to: "AW-18012920683/epNWCJav1PMcEOu2nY1D",
+        value: 1.0,
+        currency: "VND",
+      });
+    }
+  };
 
   return (
     <ConfigProvider
@@ -399,7 +409,7 @@ export default function BioTrackHealthPage() {
                 {/* Primary Action CTA Button */}
                 <div className="space-y-3">
                   <a
-                    id="cta-claim-protocol"
+                    id="cta-claim-protocol" onClick={trackConversion}
                     href={partnerLink}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -679,7 +689,7 @@ export default function BioTrackHealthPage() {
                     href={partnerLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-bold text-sm transition-colors"
+                    onClick={trackConversion} className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-bold text-sm transition-colors"
                   >
                     <span>View Full 100+ Biomarker Panel Details on Superpower</span>
                     <ArrowRight className="w-4 h-4" />
