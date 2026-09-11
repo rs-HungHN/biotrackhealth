@@ -161,7 +161,7 @@ export default function BioTrackHealthPage() {
           )}
 
           {/* Interactive Card Box */}
-          <div className="w-full bg-[#11131a]/90 backdrop-blur-xl rounded-3xl p-6 sm:p-10 border border-slate-800 shadow-2xl shadow-black/60 relative overflow-hidden">
+          <div id="quiz" className="w-full bg-[#11131a]/90 backdrop-blur-xl rounded-3xl p-6 sm:p-10 border border-slate-800 shadow-2xl shadow-black/60 relative overflow-hidden scroll-mt-10">
             
             {/* Step Indicators */}
             {!isAnalyzing && !showResult && (
@@ -606,7 +606,7 @@ export default function BioTrackHealthPage() {
               </div>
 
               {/* Head-to-Head Comparison Preview */}
-              <div className="rounded-3xl bg-[#11131a]/80 border border-slate-800 overflow-hidden shadow-xl">
+              <div id="compare" className="rounded-3xl bg-[#11131a]/80 border border-slate-800 overflow-hidden shadow-xl scroll-mt-10">
                 <div className="p-6 bg-slate-900/60 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <h3 className="font-extrabold text-xl text-white">Why Proactive Health Enthusiasts Choose Superpower</h3>
@@ -699,7 +699,7 @@ export default function BioTrackHealthPage() {
                     <div className="relative h-60 w-full bg-slate-950 overflow-hidden">
                       <img
                         src="/biomarkers_dashboard.png"
-                        alt="Superpower 100+ Biomarkers Dashboard"
+                        alt="Superpower 100+ Biomarkers Dashboard" id="biomarkers"
                         className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
@@ -716,7 +716,7 @@ export default function BioTrackHealthPage() {
                     <div className="relative h-60 w-full bg-slate-950 overflow-hidden">
                       <img
                         src="/biological_age_score.png"
-                        alt="Biological Age and Health Score"
+                        alt="Biological Age and Health Score" id="biological-age"
                         className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
@@ -733,7 +733,7 @@ export default function BioTrackHealthPage() {
                     <div className="relative h-60 w-full bg-slate-950 overflow-hidden">
                       <img
                         src="/clinical_action_plan.png"
-                        alt="Clinical Doctor Action Plan"
+                        alt="Clinical Doctor Action Plan" id="action-plan"
                         className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
@@ -750,7 +750,7 @@ export default function BioTrackHealthPage() {
                     <div className="relative h-60 w-full bg-slate-950 overflow-hidden">
                       <img
                         src="/blood_panel_kit.png"
-                        alt="Blood Draw Kit and Lab Network"
+                        alt="Blood Draw Kit and Lab Network" id="in-home"
                         className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
